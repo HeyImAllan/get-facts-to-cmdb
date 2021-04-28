@@ -18,5 +18,5 @@
 - name: Specifying a path directly
   ansible.builtin.fetch:
     src: "/tmp/cmdb-facts-{{ inventory_hostname}}.txt"
-    dest: /tmp/prefix-{{ inventory_hostname }}.txt
+    dest: /tmp/cmdb/prefix-{{ inventory_hostname }}.txt
     flat: yes
