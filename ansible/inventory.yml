@@ -1,0 +1,6 @@
+---
+all:
+  hosts:
+    dockercentos:
+      ansible_port: 2022
+      ansible_host: localhost
