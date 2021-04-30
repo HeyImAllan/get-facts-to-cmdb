@@ -1,14 +1,22 @@
 ---
-# tasks file for fetch-facts-role
-# - name: Print some debug information 
-#   vars: 
-#     msg: |
-#         Ansible Distribution: {{ ansible_distribution }}
-#         Ansible Dist version: {{ ansible_distribution_version }}
-#         Other facts: {{ ansible_facts }}
-#   debug: 
-#     msg: "{{ msg.split('\n') }}"       
-#   tags: debug_info
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  when: "ansible_facts.system == 'Linux'"
+
+- name: Gather facts on listening ports
+  listen_ports_facts:
+  when: "ansible_facts.system == 'Linux'"
+- name: Populate service facts
+  service_facts:
+
+- name: get running processes
+  shell: "ps | jq -sR '[sub(\"\n$\";\"\") | splits(\"\n\") | sub(\"^ +\";\"\") | [splits(\" +\")]] | .[0] as $header | .[1:] | [.[] | [. as $x | range($header | length) | {\"key\": $header[.], \"value\": $x[.]}] | from_entries]'"
+  register: running_processes
+
+- name: show processes
+  debug:
+    msg: "{{ running_processes }}"
 
 - name: save facts to file
   copy:
@@ -18,5 +26,5 @@
 - name: Specifying a path directly
   ansible.builtin.fetch:
     src: "/tmp/cmdb-facts-{{ inventory_hostname}}.txt"
-    dest: /tmp/cmdb/prefix-{{ inventory_hostname }}.txt
+    dest: /tmp/cmdb/ansible-facts-{{ inventory_hostname }}.json
     flat: yes
